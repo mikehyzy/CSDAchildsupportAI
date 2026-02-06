@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { TrendingUp, Search, Users, Activity, Loader2, AlertCircle } from 'lucide-react';
 
 interface AnalyticsData {
-  total_searches_today: number;
-  total_searches_week: number;
-  total_searches_month: number;
-  top_searches: { query: string; count: number }[];
+  total_chats_today: number;
+  total_chats_week: number;
+  total_chats_month: number;
+  count_good_feedback: number;
+  count_bad_feedback: number;
+  top_questions: { query: string; count: number }[];
   user_activity: { date: string; searches: number }[];
-  feedback_stats?: { positive?: number; negative?: number };
+  last_sync_timestamp: string | null;
 }
 
 const Analytics: React.FC = () => {
@@ -58,7 +60,7 @@ const Analytics: React.FC = () => {
     );
   }
 
-  const { total_searches_today, total_searches_week, total_searches_month, top_searches, user_activity } = analytics;
+  const { total_chats_today, total_chats_week, total_chats_month, count_good_feedback, count_bad_feedback, top_questions, user_activity, last_sync_timestamp } = analytics;
 
   return (
     <div className="space-y-8">
@@ -73,7 +75,7 @@ const Analytics: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Today</p>
-              <p className="text-2xl font-bold text-gray-900">{total_searches_today}</p>
+              <p className="text-2xl font-bold text-gray-900">{total_chats_today}</p>
             </div>
           </div>
         </div>
@@ -87,7 +89,7 @@ const Analytics: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">This Week</p>
-              <p className="text-2xl font-bold text-gray-900">{total_searches_week}</p>
+              <p className="text-2xl font-bold text-gray-900">{total_chats_week}</p>
             </div>
           </div>
         </div>
@@ -101,7 +103,7 @@ const Analytics: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">This Month</p>
-              <p className="text-2xl font-bold text-gray-900">{total_searches_month}</p>
+              <p className="text-2xl font-bold text-gray-900">{total_chats_month}</p>
             </div>
           </div>
         </div>
@@ -116,7 +118,7 @@ const Analytics: React.FC = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Feedback</p>
               <p className="text-2xl font-bold text-gray-900">
-                {(analytics.feedback_stats?.positive || 0) + (analytics.feedback_stats?.negative || 0)}
+                {count_good_feedback + count_bad_feedback}
               </p>
               <p className="text-sm text-gray-500">total responses</p>
             </div>
@@ -127,21 +129,21 @@ const Analytics: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Top Searches */}
         <div className="ma-card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Search Queries</h3>
-          {top_searches && top_searches.length > 0 ? (
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 10 Most Common Questions</h3>
+          {top_questions && top_questions.length > 0 ? (
             <div className="space-y-3">
-              {top_searches.slice(0, 10).map((search, index) => (
+              {top_questions.slice(0, 10).map((question, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <span className="text-sm font-medium text-gray-500 w-6">#{index + 1}</span>
-                    <span className="text-sm text-gray-900 truncate">{search.query.substring(0, 60)}...</span>
+                    <span className="text-sm text-gray-900 truncate">{question.query.substring(0, 60)}...</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <span className="text-sm font-medium text-gray-900">{search.count}</span>
+                    <span className="text-sm font-medium text-gray-900">{question.count}</span>
                     <div className="w-20 bg-gray-200 rounded-full h-2">
                       <div
                         className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${(search.count / top_searches[0].count) * 100}%` }}
+                        style={{ width: `${(question.count / top_questions[0].count) * 100}%` }}
                       ></div>
                     </div>
                   </div>
@@ -150,7 +152,7 @@ const Analytics: React.FC = () => {
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">
-              <p>No search data available yet</p>
+              <p>No question data available yet</p>
             </div>
           )}
         </div>
@@ -194,22 +196,22 @@ const Analytics: React.FC = () => {
           <h4 className="font-semibold text-gray-900 mb-3">User Feedback</h4>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Positive</span>
+              <span className="text-sm text-gray-600">Good (Positive)</span>
               <span className="text-sm font-medium text-green-600">
-                {analytics.feedback_stats?.positive || 0}
+                {count_good_feedback}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Negative</span>
+              <span className="text-sm text-gray-600">Bad (Negative)</span>
               <span className="text-sm font-medium text-red-600">
-                {analytics.feedback_stats?.negative || 0}
+                {count_bad_feedback}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Satisfaction Rate</span>
               <span className="text-sm font-medium text-blue-600">
-                {analytics.feedback_stats?.positive && (analytics.feedback_stats.positive + (analytics.feedback_stats.negative || 0)) > 0
-                  ? `${Math.round((analytics.feedback_stats.positive / (analytics.feedback_stats.positive + (analytics.feedback_stats.negative || 0))) * 100)}%`
+                {count_good_feedback + count_bad_feedback > 0
+                  ? `${Math.round((count_good_feedback / (count_good_feedback + count_bad_feedback)) * 100)}%`
                   : 'N/A'}
               </span>
             </div>
@@ -236,9 +238,9 @@ const Analytics: React.FC = () => {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Unique Queries</span>
+              <span className="text-sm text-gray-600">Unique Questions</span>
               <span className="text-sm font-medium">
-                {top_searches ? top_searches.length : 0}
+                {top_questions ? top_questions.length : 0}
               </span>
             </div>
           </div>
@@ -258,6 +260,14 @@ const Analytics: React.FC = () => {
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Database</span>
               <span className="text-sm font-medium text-green-600">Connected</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Last Sync</span>
+              <span className="text-sm font-medium text-gray-900">
+                {last_sync_timestamp
+                  ? new Date(last_sync_timestamp).toLocaleString()
+                  : 'Never'}
+              </span>
             </div>
           </div>
         </div>

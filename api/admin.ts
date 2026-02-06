@@ -70,27 +70,37 @@ export default async function handler(
     }));
 
     // Get feedback statistics
-    const feedbackResult = await sql`
-      SELECT
-        feedback,
-        COUNT(*) as count
+    const goodFeedbackResult = await sql`
+      SELECT COUNT(*) as count
       FROM chats
-      WHERE feedback IS NOT NULL
-      GROUP BY feedback
+      WHERE feedback = 'positive'
     `;
-    const feedbackStats = feedbackResult.reduce((acc: any, row: any) => {
-      acc[row.feedback] = parseInt(row.count);
-      return acc;
-    }, {});
+    const count_good_feedback = parseInt(goodFeedbackResult[0]?.count || '0');
+
+    const badFeedbackResult = await sql`
+      SELECT COUNT(*) as count
+      FROM chats
+      WHERE feedback = 'negative'
+    `;
+    const count_bad_feedback = parseInt(badFeedbackResult[0]?.count || '0');
+
+    // Get last sync timestamp from documents table
+    const lastSyncResult = await sql`
+      SELECT MAX(updated_at) as last_sync
+      FROM documents
+    `;
+    const last_sync_timestamp = lastSyncResult[0]?.last_sync || null;
 
     // Return analytics data
     return res.status(200).json({
-      total_searches_today,
-      total_searches_week,
-      total_searches_month,
-      top_searches,
+      total_chats_today: total_searches_today,
+      total_chats_week: total_searches_week,
+      total_chats_month: total_searches_month,
+      count_good_feedback,
+      count_bad_feedback,
+      top_questions: top_searches,
       user_activity,
-      feedback_stats: feedbackStats
+      last_sync_timestamp
     });
 
   } catch (error) {
