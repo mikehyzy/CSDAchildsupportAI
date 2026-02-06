@@ -43,12 +43,8 @@ export const useSearch = () => {
     setError(null);
 
     try {
-      // Add mode-specific instruction to the question
-      const modeInstruction = mode === 'summary'
-        ? 'Provide a brief summary.'
-        : 'Provide detailed step-by-step guidance.';
-
-      const fullQuestion = `${searchQuery}\n\n${modeInstruction}`;
+      // Map mode to responseType
+      const responseType = mode === 'summary' ? 'summary' : 'detailed';
 
       // Call the chat API
       const response = await fetch('/api/chat', {
@@ -57,9 +53,10 @@ export const useSearch = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          question: fullQuestion,
+          question: searchQuery,
           userEmail: user?.email || 'anonymous@example.com',
           sessionId: sessionId,
+          responseType: responseType,
         }),
       });
 
