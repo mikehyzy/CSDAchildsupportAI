@@ -10,7 +10,7 @@ const SearchResultsPage: React.FC = () => {
   const query = searchParams.get('q') || '';
   const mode = (searchParams.get('mode') as 'summary' | 'steps') || 'summary';
   
-  const { results, queryResponse, isLoading, search, error } = useSearch();
+  const { citations, queryResponse, isLoading, search, error } = useSearch();
   const [searchMode, setSearchMode] = useState<'summary' | 'steps'>(mode);
 
   useEffect(() => {
@@ -117,7 +117,7 @@ const SearchResultsPage: React.FC = () => {
           ) : (
             <SearchResultsComponent
               queryResponse={queryResponse}
-              policies={results}
+              citations={citations}
               searchMode={searchMode}
               searchQuery={query}
             />

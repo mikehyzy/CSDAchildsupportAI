@@ -19,6 +19,7 @@ interface ChatResponse {
 export const useSearch = () => {
   const { user } = useAuth();
   const [queryResponse, setQueryResponse] = useState<SearchQuery | null>(null);
+  const [citations, setCitations] = useState<Citation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +35,7 @@ export const useSearch = () => {
   const search = useCallback(async (searchQuery: string, mode: 'summary' | 'steps' = 'summary') => {
     if (!searchQuery.trim()) {
       setQueryResponse(null);
+      setCitations([]);
       setIsLoading(false);
       return;
     }
@@ -75,10 +77,13 @@ export const useSearch = () => {
       };
 
       setQueryResponse(searchQueryResponse);
+      setCitations(data.citations);
       setIsLoading(false);
     } catch (err) {
       console.error('Search error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
+      setQueryResponse(null);
+      setCitations([]);
       setIsLoading(false);
     }
   }, [user, sessionId]);
@@ -86,12 +91,14 @@ export const useSearch = () => {
   const clearSearch = () => {
     setQuery('');
     setQueryResponse(null);
+    setCitations([]);
     setIsLoading(false);
     setError(null);
   };
 
   return {
     queryResponse,
+    citations,
     isLoading,
     query,
     search,
