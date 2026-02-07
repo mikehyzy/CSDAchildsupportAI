@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertCircle, ExternalLink, Building, FileText } from 'lucide-react';
 import { SearchQuery } from '../../types';
+import ReactMarkdown from 'react-markdown';
 
 interface Citation {
   id: number;
@@ -52,19 +53,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               </h2>
               
               {searchMode === 'summary' ? (
-                <div className="prose prose-blue max-w-none">
-                  <p className="text-gray-700 leading-relaxed">{queryResponse.summary}</p>
+                <div className="prose prose-blue max-w-none text-gray-700 leading-relaxed">
+                  <ReactMarkdown>{queryResponse.summary}</ReactMarkdown>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {queryResponse.steps.map((step, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                        {index + 1}
-                      </div>
-                      <p className="text-gray-700 pt-1">{step.replace(/^\d+\.\s*/, '')}</p>
-                    </div>
-                  ))}
+                <div className="prose prose-blue max-w-none text-gray-700">
+                  <ReactMarkdown>{queryResponse.summary}</ReactMarkdown>
                 </div>
               )}
               

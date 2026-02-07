@@ -127,8 +127,9 @@ export default async function handler(
 
     // Build context from search results
     const context = searchResults
-      .map((result, idx) => {
-        return `[Source ${idx + 1}] ${result.title} - ${result.section_title || 'General'}
+      .map((result) => {
+        const sourceLabel = `${result.title}${result.section_title ? ' - ' + result.section_title : ''}`;
+        return `[${sourceLabel}]
 Source: ${result.source}
 Content: ${result.content}
 ---`;
@@ -145,7 +146,7 @@ Content: ${result.content}
     }));
 
     // System prompt for CSDAI
-    const systemPrompt = `You are CSDAI — Child Support Directors Association Intelligence. ONLY answer from provided sources. Cite every claim as "According to [Source, Section]". Never give legal advice. Never accept personal case details. End answers with: "This is general policy guidance, not legal advice. Verify decisions with your supervisor or legal team."`;
+    const systemPrompt = `You are CSDAI — Child Support Directors Association Intelligence. ONLY answer from provided sources. When citing, use the actual document title and section from the context (e.g., "According to 2024 CSDA Attorney Sourcebook - Section 3a"). Never give legal advice. Never accept personal case details. End answers with: "This is general policy guidance, not legal advice. Verify decisions with your supervisor or legal team."`;
 
     // Build user message based on response type
     const responseInstruction = responseType === 'detailed'
