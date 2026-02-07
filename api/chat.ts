@@ -7,6 +7,11 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+// Log API key status (first 10 chars only for security)
+const apiKey = process.env.ANTHROPIC_API_KEY;
+console.log('Anthropic API Key check:', apiKey ? `${apiKey.substring(0, 10)}... (${apiKey.length} chars)` : 'NOT FOUND');
+console.log('Model to be used: claude-sonnet-4-20250514');
+
 // Initialize Neon client
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -156,6 +161,10 @@ Content: ${result.content}
     // Call Anthropic API with error handling
     let answer: string;
     try {
+      console.log('Calling Anthropic API with model: claude-sonnet-4-20250514');
+      console.log('Question:', question);
+      console.log('Context length:', context.length);
+
       const message = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
@@ -176,12 +185,28 @@ Remember to cite sources and end with the required disclaimer.`
         ]
       });
 
+      console.log('Anthropic API response received successfully');
+
       // Extract answer from Anthropic response
       answer = message.content[0].type === 'text'
         ? message.content[0].text
         : 'Unable to generate response';
     } catch (aiError) {
-      console.error('Anthropic API error:', aiError);
+      // Detailed error logging
+      console.error('=== ANTHROPIC API ERROR ===');
+      console.error('Error type:', aiError instanceof Error ? aiError.constructor.name : typeof aiError);
+      console.error('Error message:', aiError instanceof Error ? aiError.message : String(aiError));
+      console.error('Full error object:', JSON.stringify(aiError, null, 2));
+
+      if (aiError && typeof aiError === 'object' && 'status' in aiError) {
+        console.error('API Status:', (aiError as any).status);
+        console.error('API Error:', (aiError as any).error);
+      }
+
+      console.error('Model used:', 'claude-sonnet-4-20250514');
+      console.error('API Key present:', !!process.env.ANTHROPIC_API_KEY);
+      console.error('==========================');
+
       // Return search results with a fallback message
       answer = `I found relevant policy information but encountered an error generating a detailed response. Here are the key sources:\n\n${citations.map((c, i) => `${i + 1}. ${c.title} - ${c.section}`).join('\n')}\n\nPlease review these sources or try again. This is general policy guidance, not legal advice. Verify decisions with your supervisor or legal team.`;
     }
