@@ -19,17 +19,16 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo and Title */}
           <div className="flex items-center space-x-4 min-w-0 flex-shrink-0">
-            <div className="flex-shrink-0 flex items-center space-x-2">
-              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-                <div className="flex space-x-1">
-                  <div className="w-3 h-6 bg-blue-600 rounded"></div>
-                  <div className="w-3 h-6 bg-yellow-400 rounded"></div>
-                </div>
-              </div>
+            <div className="flex-shrink-0 flex items-center space-x-3">
+              <img
+                src="/CSDAI Logo.png"
+                alt="CSDAI Logo"
+                className="h-14 w-auto object-contain"
+              />
             </div>
             <div className="min-w-0">
-              <h1 className="text-xl font-bold">Child Support Directors Association</h1>
-              <p className="text-sm text-white opacity-80 whitespace-nowrap">Policy Reference System</p>
+              <h1 className="text-xl font-bold">CSDAI</h1>
+              <p className="text-sm text-white opacity-90 whitespace-nowrap">Child Support Directors Association Intelligence</p>
             </div>
           </div>
 

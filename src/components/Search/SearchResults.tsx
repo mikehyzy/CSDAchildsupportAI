@@ -1,22 +1,30 @@
 import React from 'react';
-import { AlertCircle, ExternalLink, Building } from 'lucide-react';
-import { SearchQuery, Policy } from '../../types';
-import PolicyCard from './PolicyCard';
+import { AlertCircle, ExternalLink, Building, FileText } from 'lucide-react';
+import { SearchQuery } from '../../types';
+import ReactMarkdown from 'react-markdown';
+
+interface Citation {
+  id: number;
+  title: string;
+  section: string;
+  source: string;
+  url: string | null;
+}
 
 interface SearchResultsProps {
   queryResponse: SearchQuery | null;
-  policies: Policy[];
+  citations: Citation[];
   searchMode: 'summary' | 'steps';
   searchQuery: string;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
   queryResponse,
-  policies,
+  citations,
   searchMode,
   searchQuery
 }) => {
-  if (!queryResponse && policies.length === 0) {
+  if (!queryResponse && (!citations || citations.length === 0)) {
     return (
       <div className="text-center py-12">
         <AlertCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -45,19 +53,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               </h2>
               
               {searchMode === 'summary' ? (
-                <div className="prose prose-blue max-w-none">
-                  <p className="text-gray-700 leading-relaxed">{queryResponse.summary}</p>
+                <div className="prose prose-blue max-w-none text-gray-700 leading-relaxed">
+                  <ReactMarkdown>{queryResponse.summary}</ReactMarkdown>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {queryResponse.steps.map((step, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                        {index + 1}
-                      </div>
-                      <p className="text-gray-700 pt-1">{step.replace(/^\d+\.\s*/, '')}</p>
-                    </div>
-                  ))}
+                <div className="prose prose-blue max-w-none text-gray-700">
+                  <ReactMarkdown>{queryResponse.summary}</ReactMarkdown>
                 </div>
               )}
               
@@ -71,25 +72,52 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         </div>
       )}
 
-      {/* Policy Results */}
-      {policies.length > 0 && (
+      {/* Citations */}
+      {citations && citations.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">
-              Relevant Policies ({policies.length})
+              Sources ({citations.length})
             </h2>
             <div className="text-sm text-gray-500">
-              Sorted by relevance
+              Referenced documents
             </div>
           </div>
-          
-          <div className="space-y-4">
-            {policies.map((policy) => (
-              <PolicyCard
-                key={policy.id}
-                policy={policy}
-                searchQuery={searchQuery}
-              />
+
+          <div className="space-y-3">
+            {citations.map((citation) => (
+              <div key={citation.id} className="ma-card p-4 hover:shadow-md transition-shadow duration-200">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FileText className="h-5 w-5 text-blue-600" />
+                      <h3 className="font-semibold text-gray-900">{citation.title}</h3>
+                    </div>
+
+                    {citation.section && (
+                      <p className="text-sm text-gray-600 mb-2">
+                        <span className="font-medium">Section:</span> {citation.section}
+                      </p>
+                    )}
+
+                    <p className="text-sm text-gray-500">
+                      <span className="font-medium">Source:</span> {citation.source}
+                    </p>
+                  </div>
+
+                  {citation.url && (
+                    <a
+                      href={citation.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200 ml-4"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      <span>View</span>
+                    </a>
+                  )}
+                </div>
+              </div>
             ))}
           </div>
         </div>
