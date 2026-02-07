@@ -17,23 +17,8 @@ const Home: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <div className="mb-6">
-            <div className="mx-auto mb-6 flex justify-center">
-              <div className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-md">
-                <div className="flex space-x-2">
-                  <div className="w-8 h-12 bg-blue-600 rounded-lg"></div>
-                  <div className="w-8 h-12 bg-yellow-400 rounded-lg"></div>
-                </div>
-                <div className="text-left">
-                  <div className="text-2xl font-bold text-blue-600">CHILD SUPPORT</div>
-                  <div className="text-xl font-bold text-blue-600">DIRECTORS ASSOCIATION</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            CSDA Policy Reference System
+            CSDAI — Child Support Directors Association Intelligence
           </h1>
           
           <p className="text-xl text-[#535353] mb-8 max-w-3xl mx-auto">
