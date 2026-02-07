@@ -168,17 +168,17 @@ Under CCR Title 22, Division 13, the Department of Child Support Services implem
   };
 
   return (
-    <div className="ma-card p-6">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
-          <Sparkles className="h-5 w-5 text-purple-600" />
-          <h3 className="text-lg font-semibold text-gray-900">California Policy AI Assistant</h3>
+          <Sparkles className="h-5 w-5 text-csdai-sky" />
+          <h3 className="text-lg font-semibold text-gray-900">CSDAI Policy Analysis</h3>
         </div>
-        
+
         <button
           onClick={handleAISearch}
           disabled={!query.trim() || isLoading}
-          className="ma-btn-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-csdai-sky text-white rounded-lg hover:bg-csdai-sky/90 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
         >
           {isLoading ? (
             <div className="flex items-center space-x-2">
@@ -188,7 +188,7 @@ Under CCR Title 22, Division 13, the Department of Child Support Services implem
           ) : (
             <div className="flex items-center space-x-2">
               <Sparkles className="h-4 w-4" />
-              <span>Get CA Policy Analysis</span>
+              <span>Analyze</span>
             </div>
           )}
         </button>
